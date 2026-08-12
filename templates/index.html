@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Погода</title>
+</head>
+<body>
+    <h2>Узнать погоду (Демо кэширования)</h2>
+    <input type="text" id="city" placeholder="Введите город (напр. Paris)">
+    <button onclick="getWeather()">Узнать</button>
+    <p id="result"></p>
+
+    <script>
+        async function getWeather() {
+            const city = document.getElementById('city').value;
+            if (!city) return;
+
+            const resElement = document.getElementById('result');
+            resElement.innerText = "Загрузка (имитация запроса)...";
+
+            const start = Date.now();
+            const response = await fetch(`/api/weather?city=${city}`);
+            const data = await response.json();
+            const timeTaken = Date.now() - start;
+
+            resElement.innerHTML = `
+                <b>Город:</b> ${data.city} <br>
+                <b>Температура:</b> ${data.temperature}°C <br>
+                <b>Взято из кэша:</b> ${data.cached ? '<span style="color:green">Да</span>' : '<span style="color:red">Нет</span>'} <br>
+                <b>Время ответа:</b> ${timeTaken} мс
+            `;
+        }
+    </script>
+</body>
+</html>
