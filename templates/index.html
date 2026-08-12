@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Доска Идей</title>
+</head>
+<body>
+    <h2>Добавить идею (Без кэширования)</h2>
+    <input type="text" id="idea" placeholder="Новая идея...">
+    <button onclick="addIdea()">Добавить</button>
+
+    <h3>Список идей (обновляется мгновенно):</h3>
+    <ul id="list"></ul>
+
+    <script>
+        async function loadIdeas() {
+            const response = await fetch('/api/ideas');
+            const data = await response.json();
+
+            const list = document.getElementById('list');
+            list.innerHTML = '';
+
+            data.forEach(item => {
+                const li = document.createElement('li');
+                li.innerText = item;
+                list.appendChild(li);
+            });
+        }
+
+        async function addIdea() {
+            const ideaInput = document.getElementById('idea');
+            if (!ideaInput.value.trim()) return;
+
+            await fetch('/api/ideas', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({idea: ideaInput.value})
+            });
+
+            ideaInput.value = '';
+            loadIdeas();
+        }
+
+        loadIdeas();
+    </script>
+</body>
+</html>
