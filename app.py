@@ -5,7 +5,10 @@ import logging
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
+
 ideas_db = []
+
+
 
 @app.route('/')
 def index():
