@@ -7,7 +7,6 @@ logging.basicConfig(level=logging.INFO)
 
 ideas_db = []
 
-
 @app.route('/')
 def index():
     return render_template('index.html')
