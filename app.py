@@ -1,13 +1,10 @@
 from flask import Flask, request, jsonify, render_template
 import time
+import random
 import logging
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
-
-
-ideas_db = []
-
 
 
 @app.route('/')
@@ -15,25 +12,24 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/api/ideas', methods=['GET', 'POST'])
-def manage_ideas():
+@app.route('/api/weather')
+def weather():
     start_time = time.time()
 
-    if request.method == 'POST':
-        data = request.get_json()
-        if 'idea' in data and data['idea'].strip():
-            ideas_db.append(data['idea'].strip())
+    city = request.args.get('city', 'Unknown').lower()
 
+    time.sleep(2)
 
-        duration = time.time() - start_time
-        app.logger.info(f"[БЕЗ КЭША] Добавлена новая идея | Время обработки (POST): {duration:.4f} сек")
-
-        return jsonify({"status": "success"})
+    data = {
+        "city": city.capitalize(),
+        "temperature": random.randint(-10, 35),
+        "cached": False
+    }
 
     duration = time.time() - start_time
-    app.logger.info(f"[БЕЗ КЭША] Отдан список идей | Время обработки (GET): {duration:.4f} сек")
+    app.logger.info(f"[БЕЗ КЭША] Город: {city} | Взято из кэша: НЕТ | Время обработки: {duration:.4f} сек")
 
-    return jsonify(ideas_db)
+    return jsonify(data)
 
 
 if __name__ == '__main__':
