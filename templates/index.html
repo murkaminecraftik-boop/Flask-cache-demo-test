@@ -2,46 +2,40 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Доска Идей</title>
+    <title>Погода (Без кэша)</title>
 </head>
 <body>
-    <h2>Добавить идею (Без кэширования)</h2>
-    <input type="text" id="idea" placeholder="Новая идея...">
-    <button onclick="addIdea()">Добавить</button>
-
-    <h3>Список идей (обновляется мгновенно):</h3>
-    <ul id="list"></ul>
+    <h2>Узнать погоду (Версия БЕЗ кэширования)</h2>
+    <input type="text" id="city" placeholder="Введите город (напр. Paris)">
+    <button onclick="getWeather()">Узнать</button>
+    <p id="result"></p>
 
     <script>
-        async function loadIdeas() {
-            const response = await fetch('/api/ideas');
+        async function getWeather() {
+            const city = document.getElementById('city').value;
+            if (!city) return;
+
+            const resElement = document.getElementById('result');
+            resElement.innerText = "Загрузка (имитация долгого запроса)...";
+
+            const start = Date.now();
+
+            const safeCity = encodeURIComponent(city);
+
+            const response = await fetch(`/api/weather?city=${safeCity}`);
             const data = await response.json();
 
-            const list = document.getElementById('list');
-            list.innerHTML = '';
+            const timeTaken = Date.now() - start;
 
-            data.forEach(item => {
-                const li = document.createElement('li');
-                li.innerText = item;
-                list.appendChild(li);
-            });
+            resElement.innerHTML = `
+                <b>Город:</b> <span id="cityName"></span> <br>
+                <b>Температура:</b> ${data.temperature}°C <br>
+                <b>Взято из кэша:</b> <span style="color:red">Нет</span> <br>
+                <b>Время ответа:</b> ${timeTaken} мс
+            `;
+
+            document.getElementById('cityName').textContent = data.city;
         }
-
-        async function addIdea() {
-            const ideaInput = document.getElementById('idea');
-            if (!ideaInput.value.trim()) return;
-
-            await fetch('/api/ideas', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({idea: ideaInput.value})
-            });
-
-            ideaInput.value = '';
-            loadIdeas();
-        }
-
-        loadIdeas();
     </script>
 </body>
 </html>
