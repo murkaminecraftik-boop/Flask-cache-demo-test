@@ -3,8 +3,8 @@ from flask_caching import Cache
 import time
 import random
 import logging
-app = Flask(__name__)
 
+app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
 app.config['CACHE_TYPE'] = 'SimpleCache'
@@ -25,26 +25,28 @@ def weather():
     cached_data = cache.get(city)
 
     if cached_data:
-        cached_data['cached'] = True
+        result = {**cached_data, "cached": True}
 
         duration = time.time() - start_time
         app.logger.info(f"[КЭШ ДЕМО] Город: {city} | Взято из кэша: ДА | Время обработки: {duration:.4f} сек")
 
-        return jsonify(cached_data)
+        return jsonify(result)
 
     time.sleep(2)
 
     data = {
         "city": city.capitalize(),
-        "temperature": random.randint(-10, 35),
-        "cached": False
+        "temperature": random.randint(-10, 35)
     }
+
     cache.set(city, data)
+
+    result = {**data, "cached": False}
 
     duration = time.time() - start_time
     app.logger.info(f"[КЭШ ДЕМО] Город: {city} | Взято из кэша: НЕТ | Время обработки: {duration:.4f} сек")
 
-    return jsonify(data)
+    return jsonify(result)
 
 
 if __name__ == '__main__':
