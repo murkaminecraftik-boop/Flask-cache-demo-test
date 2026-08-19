@@ -10,6 +10,7 @@
     <button onclick="getWeather()">Узнать</button>
     <p id="result"></p>
 
+
     <script>
         async function getWeather() {
             const city = document.getElementById('city').value;
@@ -19,7 +20,9 @@
             resElement.innerText = "Загрузка (имитация запроса)...";
 
             const start = Date.now();
-            const response = await fetch(`/api/weather?city=${city}`);
+            const safeCity = encodeURIComponent(city);
+            const response = await fetch(`/api/weather?city=${safeCity}`);
+
             const data = await response.json();
             const timeTaken = Date.now() - start;
 
